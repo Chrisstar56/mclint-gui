@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i,700,700i&display=swap" rel="stylesheet">
+    <link href="./css/icons.css" rel="stylesheet"/>
+    <link href="./css/animation.css" rel="stylesheet"/>
+    <link href="./style.css" rel="stylesheet"/>
+    <script src="./vue.js"></script>
+  </head>
+  <body>
+    <h1>MCLint</h1>
+
+
+    <h2>Check files/folder</h2>
+    <div id="file-list" v-if="fileList.length > 0">
+      <ul>
+        <!--
+          Now we provide each todo-item with the todo object
+          it's representing, so that its content can be dynamic.
+          We also need to provide each component with a "key",
+          which will be explained later.
+        -->
+        <item-file
+          v-for="item in fileList"
+          v-bind:file="item"
+          v-bind:key="item.id"
+        ></item-file>
+      </ul>
+    </div>
+
+    <button id="files">Open Files</button>
+    <button id="folder">Open Folder</button>
+    <button id="check" class="green">Check Files</button>
+
+    <div id="error-view" v-if="filename">
+      <div class="top">{{filename}}</div>
+      <div class="bottom">{{error}}</div>
+    </div>
+
+    <h2 style="margin-top: 20px;">Check single command</h2>
+    <div id="command-check">
+      <div class="first">
+        <input id="command" v-model="cmd" placeholder="Enter Command here..." type="text" class="command"/>
+        <button id="check_command_button" v-on:click="parse(cmd)" class="green">Check Command</button>
+      </div>
+      <div class="second" v-if="error">{{error}}</div>
+    </div>
+    <script src="./renderer.js"></script>
+  </body>
+</html>
