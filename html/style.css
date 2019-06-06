@@ -115,6 +115,9 @@ button.green {
   font-weight: bold;
   overflow: auto;
 }
+#error-view .bottom.correct{
+  color: #4fc32f;
+}
 
 #running-test {
   background: #4444FF;
@@ -146,6 +149,10 @@ button.green {
   white-space: pre;
   font-weight: bold;
   overflow: auto;
+}
+
+#command-check .second.correct {
+  color: #4fc32f;
 }
 
 #command-check input {

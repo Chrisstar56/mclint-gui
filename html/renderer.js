@@ -1,8 +1,6 @@
 const { dialog } = require('electron').remote;
 const path = require('path');
 const mclint = require('mclint');
-//var SlVueTree = require('sl-vue-tree');
-const normalize = require('normalize-path');
 
 var files = document.getElementById("files");
 var folder = document.getElementById("folder");
@@ -10,7 +8,6 @@ var check = document.getElementById("check");
 
 var lint_worker = new Worker("check-file-worker.js");
 
-//var SlVueTree = require('sl-file-tree').export;
 
 lint_worker.onerror = function(e) {
   console.log('worker error');
@@ -18,7 +15,8 @@ lint_worker.onerror = function(e) {
 }
 var error_data = {
   error: "",
-  filename: ""
+  filename: "",
+  correct: false
 }
 Vue.component('item-file', {
   props: {file: {type: Object, required: true}},
@@ -28,7 +26,11 @@ Vue.component('item-file', {
       for(let er of fl.errors){
         msg += er + "\n";
       }
-      if(msg === "")msg = "No Errors!";
+      error_data.correct = false;
+      if(msg === ""){
+        error_data.correct = true;
+        msg = "No Errors!";
+      }
       error_data.error = msg;
       error_data.filename = fl.path;
     }
@@ -37,31 +39,7 @@ Vue.component('item-file', {
 });
 
 var data = {
-  fileList: [/*
-  {
-    "name": "loadinit.mcfunction",
-    "path": "C:\\Users\\bboet\\Desktop\\Programmieren\\NodeJS\\mclint\\resources\\lapiscore\\loadinit.mcfunction",
-    "depth": 0
-  },
-  {
-    "id": 1,
-    "name": "main.mcfunction",
-    "path": "C:\\Users\\bboet\\Desktop\\Programmieren\\NodeJS\\mclint\\resources\\lapiscore\\main.mcfunction",
-    "depth": 1
-  },
-  {
-    "id": 2,
-    "name": "maincheck.mcfunction",
-    "path": "C:\\Users\\bboet\\Desktop\\Programmieren\\NodeJS\\mclint\\resources\\lapiscore\\maincheck.mcfunction",
-    "depth": 3
-  },
-  {
-    "id": 3,
-    "name": "uninstall.mcfunction",
-    "path": "C:\\Users\\bboet\\Desktop\\Programmieren\\NodeJS\\mclint\\resources\\lapiscore\\uninstall.mcfunction",
-    "depth": 5
-  }*/
-]
+  fileList: []
 };
 var raw_files = ["C:/Users/bboet/Desktop/Programmieren/NodeJS/mclint/test/Tinkery/data/tinkery/functions/hello.mcfunction", "C:/Users/bboet/Desktop/Programmieren/NodeJS/mclint/test/Tinkery/data/tinkery/functions/load.mcfunction", "C:/Users/bboet/Desktop/Programmieren/NodeJS/mclint/test/Tinkery/data/tinkery/functions/loadcheck.mcfunction", "C:/Users/bboet/Desktop/Programmieren/NodeJS/mclint/tst/Tinkery/data/tinkery/functions/main.mcfunction"];
 var raw_folder = "C:/Users/bboet/Desktop/Programmieren/NodeJS/mclint/test/Tinkery/";
@@ -100,12 +78,7 @@ folder.addEventListener("click", function(e){
         folder: true,
         depth: 0
       });
-      console.log(files);
-      // for(let i = 0; i < files.length; i++){
-      //   let filename = path.parse(files[i]).base;
-      //   data.fileList.push({id: i, name: filename, path: files[i], folder: true});
-      //   raw_files.push(files[i]);
-      // }
+
     }
   });
 });
@@ -114,7 +87,7 @@ check.addEventListener("click", function(e){
   if(raw_file_type === "folder"){
     lint_worker.postMessage({type: 'folder', folder: raw_folder});
   }else if(raw_file_type === "files"){
-    console.log("Send data to worker");
+
     lint_worker.postMessage({type: "files", files: raw_files});
   }
   for(let item of data.fileList){
@@ -177,7 +150,7 @@ lint_worker.onmessage = function(msg){
       }
     }
     for(let res of results){
-      //console.log(path.parse(res.file));
+
       let rpath = res.file.substr(root.length);
       let name = path.parse(res.file).base;
       let parts = rpath.split(path.sep);
@@ -214,7 +187,9 @@ lint_worker.onmessage = function(msg){
       data.fileList.push({name: name, depth: 0, path: res.file, status: status, errors: res.errors});
     }
   }
-  console.log(msg.data);
+
+
+  
 };
 
 var file_list = new Vue({
@@ -229,12 +204,13 @@ var errors = new Vue({
 var single_command = new Vue({
   el: '#command-check',
   props: ['cmd', 'error'],
-  data: {},
+  data: {correct: false},
   methods: {
     parse: function(e){
       var er = mclint.parseCommand(e);
-
+        this.correct = false;
       if(!er || er === ""){
+        this.correct = true;
         er = "No errors!"
       }
       this.error = er;

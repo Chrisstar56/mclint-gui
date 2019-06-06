@@ -1,21 +1,50 @@
 {
   "name": "mclint-gui",
   "version": "1.0.0",
-  "description": "GUI to mclint",
+  "description": "GUI tfor mclint",
   "main": "index.js",
   "scripts": {
+    "pack": "build --dir",
+    "dist": "build",
+    "package": "asar pack \"C:\\Users\\bboet\\Desktop\\Programmieren\\NodeJS\\mclint-gui\\MCLint-win32-x64\\resources\\app\" \"C:\\Users\\bboet\\Desktop\\Programmieren\\NodeJS\\mclint-gui\\MCLint-win32-x64\\resources\\app.asar\"",
+    "distalt": "electron-packager . MCLint --icon=\"C:\\Users\\bboet\\Desktop\\Programmieren\\NodeJS\\mclint-gui\\icon.ico\"",
     "start": "electron ."
   },
-  "author": "",
-  "license": "ISC",
+  "build": {
+    "appId": "de.btgrnet.mclint.gui",
+    "productName": "MCLint",
+    "dmg": {
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    },
+    "win": {
+      "target": "NSIS",
+      "icon": "icon.ico"
+    }
+  },
+  "author": "Chrisstar56",
   "devDependencies": {
-    "electron": "^5.0.2"
+    "electron": "^5.0.2",
+    "electron-builder": "^20.43.0",
+    "electron-packager": "^13.1.1"
   },
   "dependencies": {
-    "mclint": "^1.1.0",
-    "normalize-path": "^3.0.0",
-    "path": "^0.12.7",
-    "path-directories": "^1.0.1",
-    "sl-vue-tree": "^1.8.4"
+    "mclint": "^1.1.0"
   }
 }
